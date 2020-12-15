@@ -644,7 +644,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1110087102}
-        m_MethodName: Logout
+        m_MethodName: Btn_Leave_Channel_Clicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1268,7 +1268,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1110087102}
-        m_MethodName: LoginUser
+        m_MethodName: Btn_Join_Channel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1647,8 +1647,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.83636475, y: -3947.8926}
-  m_SizeDelta: {x: 0, y: 7895.784}
+  m_AnchoredPosition: {x: -0.83636475, y: -2469.8975}
+  m_SizeDelta: {x: 0, y: 4939.7954}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &611133597
 MonoBehaviour:
@@ -2185,7 +2185,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Logout
+  m_Text: 'Leave
+
+'
 --- !u!222 &828317058
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3213,7 +3215,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Login
+  m_Text: Join Channel
 --- !u!222 &1593342537
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3950,7 +3952,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2138751172}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.08223028
+  m_Size: 0.12527284
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
