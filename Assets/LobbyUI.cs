@@ -7,12 +7,12 @@ using VivoxUnity;
 
 public class LobbyUI : MonoBehaviour
 {
-    [SerializeField] VivoxManager credentials;
+    public VivoxManager credentials;
 
     #region UI Variables
     // Updated UI variables not shown In my first video
     // The rest of the code is fairly the same
-    [SerializeField] Text txt_UserName;
+    public Text txt_UserName;
     [SerializeField] Text txt_ChannelName;
     public Text txt_Message_Prefab;
     [SerializeField] TMP_InputField tmp_Input_Username;
@@ -58,5 +58,9 @@ public class LobbyUI : MonoBehaviour
     public void Send_Group_Message()
     {
         credentials.Send_Group_Message(tmp_Input_SendMessages.text);
+    }  
+    public void Send_Event_Message()
+    {
+        credentials.Send_Event_Message(tmp_Input_SendMessages.text, "Test", "blue");
     }
 }

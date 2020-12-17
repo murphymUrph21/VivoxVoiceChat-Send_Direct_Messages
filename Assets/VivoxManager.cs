@@ -73,6 +73,7 @@ public class VivoxManager : MonoBehaviour
             channelSesh.Participants.BeforeKeyRemoved += On_Participant_Removed;
             channelSesh.Participants.AfterValueUpdated += On_Participant_Updated;
         }
+        else
         {
             channelSesh.Participants.AfterKeyAdded -= On_Participant_Added;
             channelSesh.Participants.BeforeKeyRemoved -= On_Participant_Removed;
@@ -129,17 +130,21 @@ public class VivoxManager : MonoBehaviour
     public void Login_Status(object sender, PropertyChangedEventArgs loginArgs)
     {
         var source = (ILoginSession)sender;
-        
-        switch (source.State)
+
+        if (loginArgs.PropertyName == "State")
         {
-            case LoginState.LoggingIn:
-                Debug.Log("Logging In");
-                break;
-            
-            case LoginState.LoggedIn:
-                Debug.Log($"Logged In {vivox.loginSession.LoginSessionId.Name}");
-                break;
+            switch (source.State)
+            {
+                case LoginState.LoggingIn:
+                    Debug.Log("Logging In");
+                    break;
+
+                case LoginState.LoggedIn:
+                    Debug.Log($"Logged In {vivox.loginSession.LoginSessionId.Name}");
+                    break;
+            }
         }
+
     }
 
 
@@ -283,7 +288,10 @@ public class VivoxManager : MonoBehaviour
         var source = (VivoxUnity.IReadOnlyDictionary<string, IParticipant>)sender;
 
         IParticipant user = source[participantArgs.Key];
+        
         Debug.Log($"{user.Account.Name} has joined the channel");
+        var temp = Instantiate(lobbyUI.txt_Message_Prefab, lobbyUI.container.transform);
+        temp.text = $"{user.Account.Name} has joined the channel";
     }   
 
     public void On_Participant_Removed(object sender, KeyEventArg<string> participantArgs)
@@ -292,14 +300,16 @@ public class VivoxManager : MonoBehaviour
 
         IParticipant user = source[participantArgs.Key];
         Debug.Log($"{user.Account.Name} has left the channel");
-        
+        var temp = Instantiate(lobbyUI.txt_Message_Prefab, lobbyUI.container.transform);
+        temp.text = $"{user.Account.Name} has left the channel";
+
     }  
 
     public void On_Participant_Updated(object sender, ValueEventArg<string, IParticipant> participantArgs)
     {
         var source = (VivoxUnity.IReadOnlyDictionary<string, IParticipant>)sender;
 
-        IParticipant user = source[participantArgs.Key];
+        IParticipant user = source[participantArgs.Key]; 
     }
 
 
@@ -322,6 +332,21 @@ public class VivoxManager : MonoBehaviour
                 Debug.Log(e.Message);
             }
         });
+    }   
+    
+    public void Send_Event_Message(string message, string stanzaNameSpace, string stanzaBody)
+    {
+        vivox.channelSession.BeginSendText(null, message, stanzaNameSpace, stanzaBody, ar =>
+        {
+            try
+            {
+                vivox.channelSession.EndSendText(ar);
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e.Message);
+            }
+        });
     }
 
     public void On_Message_Recieved(object sender, QueueItemAddedEventArgs<IChannelTextMessage> msgArgs)
@@ -330,8 +355,27 @@ public class VivoxManager : MonoBehaviour
 
         Debug.Log($"From {msgArgs.Value.Sender} : Message - {msgArgs.Value.Message}");
 
+        Check_Message_Args(msgArgs.Value);
+
         var temp = Instantiate(lobbyUI.txt_Message_Prefab, lobbyUI.container.transform);
         temp.text = $"From {msgArgs.Value.Sender.DisplayName} : Message - {msgArgs.Value.Message}";
+    }
+
+
+    public void Check_Message_Args(IChannelTextMessage message)
+    {
+        if(message.ApplicationStanzaNamespace == "Test")
+        {
+            Debug.Log("This is a test");
+            if(message.ApplicationStanzaBody == "blue")
+            {
+                Debug.Log("this player is blue");
+            }
+        }
+        if(message.ApplicationStanzaBody == "Helloe Body")
+        {
+            Debug.Log("This a hidden message");
+        }
     }
 
 
