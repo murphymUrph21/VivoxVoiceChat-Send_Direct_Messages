@@ -16,4 +16,6 @@ public class VivoxCredentials
 
     public ILoginSession loginSession;
     public IChannelSession channelSession;
+
+    public List<IFailedDirectedTextMessage> failedMessages = new List<IFailedDirectedTextMessage>();
 }

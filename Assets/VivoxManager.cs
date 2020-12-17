@@ -93,7 +93,19 @@ public class VivoxManager : MonoBehaviour
         }
     }
 
-
+    public void Bind_Directed_Message_Callbacks(bool bind, ILoginSession loginSesh)
+    {
+        if (bind)
+        {
+            loginSesh.DirectedMessages.AfterItemAdded += On_Direct_Message_Recieved;
+            loginSesh.FailedDirectedMessages.AfterItemAdded += On_Direct_Message_Failed;
+        }
+        else
+        {
+            loginSesh.DirectedMessages.AfterItemAdded -= On_Direct_Message_Recieved;
+            loginSesh.FailedDirectedMessages.AfterItemAdded -= On_Direct_Message_Failed;
+        }
+    }
 
     #endregion
 
@@ -111,6 +123,7 @@ public class VivoxManager : MonoBehaviour
         vivox.loginSession = vivox.client.GetLoginSession(accountId);
 
         Bind_Login_Callback_Listeners(true, vivox.loginSession);
+
         vivox.loginSession.BeginLogin(vivox.server, vivox.loginSession.GetLoginToken(vivox.tokenKey, vivox.timeSpan), ar =>
         {
             try
@@ -120,6 +133,30 @@ public class VivoxManager : MonoBehaviour
             catch (Exception e)
             {
                 Bind_Login_Callback_Listeners(false, vivox.loginSession);
+                Debug.Log(e.Message);
+            }
+            // run more code here 
+        });
+    }
+
+    public void Login(string userName, SubscriptionMode subMode)
+    {
+        AccountId accountId = new AccountId(vivox.issuer, userName, vivox.domain);
+        vivox.loginSession = vivox.client.GetLoginSession(accountId);
+        
+        Bind_Login_Callback_Listeners(true, vivox.loginSession);
+        Bind_Directed_Message_Callbacks(true, vivox.loginSession);
+
+        vivox.loginSession.BeginLogin(vivox.server, vivox.loginSession.GetLoginToken(vivox.tokenKey, vivox.timeSpan),subMode, null, null, null, ar =>
+        {
+            try
+            {
+                vivox.loginSession.EndLogin(ar);
+            }
+            catch (Exception e)
+            {
+                Bind_Login_Callback_Listeners(false, vivox.loginSession);
+                Bind_Directed_Message_Callbacks(false, vivox.loginSession);
                 Debug.Log(e.Message);
             }
             // run more code here 
@@ -222,6 +259,7 @@ public class VivoxManager : MonoBehaviour
                     Bind_Channel_Callback_Listeners(false, vivox.channelSession);
                     Bind_User_Callbacks(false, vivox.channelSession);
                     Bind_Group_Message_Callbacks(false, vivox.channelSession);
+                    Bind_Directed_Message_Callbacks(false, vivox.loginSession);
                     break;
             }
         }
@@ -292,6 +330,12 @@ public class VivoxManager : MonoBehaviour
         Debug.Log($"{user.Account.Name} has joined the channel");
         var temp = Instantiate(lobbyUI.txt_Message_Prefab, lobbyUI.container.transform);
         temp.text = $"{user.Account.Name} has joined the channel";
+
+        if (!user.IsSelf)
+        {
+            lobbyUI.tmp_Dropdown_LoggedInUsers.Add_Value(user.Account.Name);
+        }
+
     }   
 
     public void On_Participant_Removed(object sender, KeyEventArg<string> participantArgs)
@@ -376,6 +420,50 @@ public class VivoxManager : MonoBehaviour
         {
             Debug.Log("This a hidden message");
         }
+    }
+
+
+    #endregion
+
+
+    #region Send Direct Messages
+
+    public void Send_Direct_Message(string userToSend, string message)
+    {
+        var accountID = new AccountId(vivox.issuer, userToSend, vivox.domain);
+
+        vivox.loginSession.BeginSendDirectedMessage(accountID, message, ar =>
+        {
+            try
+            {
+                vivox.loginSession.EndSendDirectedMessage(ar);
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e.Message);
+            }
+        });
+    }
+
+    public void On_Direct_Message_Recieved(object sender, QueueItemAddedEventArgs<IDirectedTextMessage> txtMsgArgs)
+    {
+        var msgSender = (IReadOnlyQueue<IDirectedTextMessage>)sender;
+
+        while(msgSender.Count > 0)
+        {
+           var msg = msgSender.Dequeue().Message;
+            var temp = Instantiate(lobbyUI.txt_Message_Prefab, lobbyUI.container.transform);
+            temp.text = msg;
+           // Debug.Log(txtMsgArgs.Value.Message);
+        }
+    }
+
+    public void On_Direct_Message_Failed(object sender, QueueItemAddedEventArgs<IFailedDirectedTextMessage> txtMsgArgs)
+    {
+        var msgSender = (IReadOnlyQueue<IFailedDirectedTextMessage>)sender;
+
+        Debug.Log(txtMsgArgs.Value.Sender);
+        vivox.failedMessages.Add(txtMsgArgs.Value);
     }
 
 

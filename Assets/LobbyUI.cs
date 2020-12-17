@@ -19,6 +19,7 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] TMP_InputField tmp_Input_ChannelName;
     [SerializeField] TMP_InputField tmp_Input_SendMessages;
     public Image container;
+    public TMP_Dropdown tmp_Dropdown_LoggedInUsers;
 
     #endregion
 
@@ -46,7 +47,7 @@ public class LobbyUI : MonoBehaviour
 
     public void LoginUser()
     {
-        credentials.Login(tmp_Input_Username.text);
+        credentials.Login(tmp_Input_Username.text, SubscriptionMode.Accept);
     }
 
     public void Logout()
@@ -63,4 +64,11 @@ public class LobbyUI : MonoBehaviour
     {
         credentials.Send_Event_Message(tmp_Input_SendMessages.text, "Test", "blue");
     }
+
+    public void Send_Direct_Message()
+    {
+        credentials.Send_Direct_Message(tmp_Dropdown_LoggedInUsers.Get_Selected(), tmp_Input_SendMessages.text);
+    }
+    
+
 }
