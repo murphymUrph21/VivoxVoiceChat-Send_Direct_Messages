@@ -77,6 +77,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'I have a doubt on how to call the method of particular interface (Say
-    IA or IB or In...) in the following code. Please help me on how to call. I have
-    commented the lines of code where I '
+  m_Text: 

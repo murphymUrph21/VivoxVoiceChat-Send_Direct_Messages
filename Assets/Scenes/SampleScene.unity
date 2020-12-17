@@ -643,7 +643,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1110087102}
+      - m_Target: {fileID: 1178488661}
         m_MethodName: Btn_Leave_Channel_Clicked
         m_Mode: 1
         m_Arguments:
@@ -1267,7 +1267,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1110087102}
+      - m_Target: {fileID: 1178488661}
         m_MethodName: Btn_Join_Channel
         m_Mode: 1
         m_Arguments:
@@ -2469,7 +2469,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1110087102}
+      - m_Target: {fileID: 1178488661}
         m_MethodName: LoginUser
         m_Mode: 1
         m_Arguments:
@@ -2580,7 +2580,7 @@ GameObject:
   - component: {fileID: 1110087103}
   - component: {fileID: 1110087102}
   m_Layer: 0
-  m_Name: Login_Credentials
+  m_Name: VivoxManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2643,13 +2643,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   credentials: {fileID: 1110087102}
-  txt_UserName: {fileID: 0}
-  txt_ChannelName: {fileID: 0}
-  txt_Message_Prefab: {fileID: 0}
-  tmp_Input_Username: {fileID: 0}
-  tmp_Input_ChannelName: {fileID: 0}
-  tmp_Input_SendMessages: {fileID: 0}
-  container: {fileID: 0}
+  txt_UserName: {fileID: 501173284}
+  txt_ChannelName: {fileID: 46973981}
+  txt_Message_Prefab: {fileID: 7447803410055334036, guid: 14bce794cabebb145ab32134c50b1d0c,
+    type: 3}
+  tmp_Input_Username: {fileID: 586323448}
+  tmp_Input_ChannelName: {fileID: 1742499574}
+  tmp_Input_SendMessages: {fileID: 549117669}
+  container: {fileID: 611133599}
 --- !u!4 &1178488662
 Transform:
   m_ObjectHideFlags: 0
@@ -2900,7 +2901,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1110087102}
+      - m_Target: {fileID: 1178488661}
         m_MethodName: Logout
         m_Mode: 1
         m_Arguments:
@@ -4119,7 +4120,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1921659427}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1178488661}
+        m_MethodName: Send_Group_Message
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1921659427
 MonoBehaviour:
   m_ObjectHideFlags: 0

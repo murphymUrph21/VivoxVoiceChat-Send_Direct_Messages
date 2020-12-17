@@ -14,30 +14,18 @@ public class LobbyUI : MonoBehaviour
     // The rest of the code is fairly the same
     [SerializeField] Text txt_UserName;
     [SerializeField] Text txt_ChannelName;
-    [SerializeField] Text txt_Message_Prefab;
+    public Text txt_Message_Prefab;
     [SerializeField] TMP_InputField tmp_Input_Username;
     [SerializeField] TMP_InputField tmp_Input_ChannelName;
     [SerializeField] TMP_InputField tmp_Input_SendMessages;
-    [SerializeField] Image container;
+    public Image container;
 
     #endregion
 
     // Start is called before the first frame update
     void Start()
     {
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
-        Instantiate(txt_Message_Prefab, container.transform);
+        
     }
 
     public void Btn_Join_Channel()
@@ -65,5 +53,10 @@ public class LobbyUI : MonoBehaviour
     {
         credentials.vivox.loginSession.Logout();
         credentials.Bind_Login_Callback_Listeners(false, credentials.vivox.loginSession);
+    }
+
+    public void Send_Group_Message()
+    {
+        credentials.Send_Group_Message(tmp_Input_SendMessages.text);
     }
 }

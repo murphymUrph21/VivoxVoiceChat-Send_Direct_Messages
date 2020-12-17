@@ -10,7 +10,7 @@ using TMPro;
 public class VivoxManager : MonoBehaviour
 {
 
-    public Base_Credentials vivox = new Base_Credentials();
+    public VivoxCredentials vivox = new VivoxCredentials();
     public LobbyUI lobbyUI;
 
 
@@ -36,11 +36,16 @@ public class VivoxManager : MonoBehaviour
 
     }
 
+
+
+    #region Binding Callbacks
+
+
     public void Bind_Login_Callback_Listeners(bool bind, ILoginSession loginSesh)
     {
         if (bind)
         {
-             loginSesh.PropertyChanged += Login_Status;
+            loginSesh.PropertyChanged += Login_Status;
         }
         else
         {
@@ -65,7 +70,7 @@ public class VivoxManager : MonoBehaviour
         if (bind)
         {
             channelSesh.Participants.AfterKeyAdded += On_Participant_Added;
-            channelSesh.Participants.BeforeKeyRemoved+= On_Participant_Removed;
+            channelSesh.Participants.BeforeKeyRemoved += On_Participant_Removed;
             channelSesh.Participants.AfterValueUpdated += On_Participant_Updated;
         }
         {
@@ -74,6 +79,24 @@ public class VivoxManager : MonoBehaviour
             channelSesh.Participants.AfterValueUpdated -= On_Participant_Updated;
         }
     }
+
+    public void Bind_Group_Message_Callbacks(bool bind, IChannelSession channelSesh)
+    {
+        if (bind)
+        {
+            channelSesh.MessageLog.AfterItemAdded += On_Message_Recieved;
+        }
+        else
+        {
+            channelSesh.MessageLog.AfterItemAdded -= On_Message_Recieved;
+        }
+    }
+
+
+
+    #endregion
+
+
 
 
 
@@ -132,6 +155,8 @@ public class VivoxManager : MonoBehaviour
         ChannelId channelId = new ChannelId(vivox.issuer, channelName, vivox.domain, channelType);
         vivox.channelSession = vivox.loginSession.GetChannelSession(channelId);
         Bind_Channel_Callback_Listeners(true, vivox.channelSession);
+        Bind_User_Callbacks(true, vivox.channelSession);
+        Bind_Group_Message_Callbacks(true, vivox.channelSession);
 
         if (IsAudio)
         {
@@ -152,6 +177,8 @@ public class VivoxManager : MonoBehaviour
             catch(Exception e)
             {
                 Bind_Channel_Callback_Listeners(false, vivox.channelSession);
+                Bind_User_Callbacks(false, vivox.channelSession);
+                Bind_Group_Message_Callbacks(false, vivox.channelSession);
                 if (IsAudio)
                 {
                     vivox.channelSession.PropertyChanged -= On_Audio_State_Changed;
@@ -172,20 +199,26 @@ public class VivoxManager : MonoBehaviour
     {
         IChannelSession source = (IChannelSession)sender;
 
-        switch (source.ChannelState)
+        if(channelArgs.PropertyName == "ChannelState")
         {
-            case ConnectionState.Connecting:
-                Debug.Log("Channel Connecting");
-                break;    
-            case ConnectionState.Connected:
-                Debug.Log($"{source.Channel.Name} Connected");
-                break;       
-            case ConnectionState.Disconnecting:
-                Debug.Log($"{source.Channel.Name} disconnecting");
-                break;    
-            case ConnectionState.Disconnected:
-                Debug.Log($"{source.Channel.Name} disconnected");
-                break;
+            switch (source.ChannelState)
+            {
+                case ConnectionState.Connecting:
+                    Debug.Log("Channel Connecting");
+                    break;
+                case ConnectionState.Connected:
+                    Debug.Log($"{source.Channel.Name} Connected");
+                    break;
+                case ConnectionState.Disconnecting:
+                    Debug.Log($"{source.Channel.Name} disconnecting");
+                    break;
+                case ConnectionState.Disconnected:
+                    Debug.Log($"{source.Channel.Name} disconnected");
+                    Bind_Channel_Callback_Listeners(false, vivox.channelSession);
+                    Bind_User_Callbacks(false, vivox.channelSession);
+                    Bind_Group_Message_Callbacks(false, vivox.channelSession);
+                    break;
+            }
         }
     }
 
@@ -193,43 +226,50 @@ public class VivoxManager : MonoBehaviour
     {
         IChannelSession source = (IChannelSession)sender;
 
-        switch (source.AudioState)
+        if(audioArgs.PropertyName == "AudioState")
         {
-            case ConnectionState.Connecting:
-                Debug.Log($"Audio Channel Connecting");
-                break;          
-            case ConnectionState.Connected:
-                Debug.Log($"Audio Channel Connected");
-                break;          
-            case ConnectionState.Disconnecting:
-                Debug.Log($"Audio Channel Disconnecting");
-                break;         
-            case ConnectionState.Disconnected:
-                Debug.Log($"Audio Channel Disconnected");
-                break;
+            switch (source.AudioState)
+            {
+                case ConnectionState.Connecting:
+                    Debug.Log($"Audio Channel Connecting");
+                    break;
+                case ConnectionState.Connected:
+                    Debug.Log($"Audio Channel Connected");
+                    break;
+                case ConnectionState.Disconnecting:
+                    Debug.Log($"Audio Channel Disconnecting");
+                    break;
+                case ConnectionState.Disconnected:
+                    Debug.Log($"Audio Channel Disconnected");
+                    vivox.channelSession.PropertyChanged -= On_Audio_State_Changed;
+                    break;
+            }
         }
     }  
     
-    public void On_Text_State_Changed(object sender, PropertyChangedEventArgs audioArgs)
+    public void On_Text_State_Changed(object sender, PropertyChangedEventArgs textArgs)
     {
         IChannelSession source = (IChannelSession)sender;
 
-        switch(source.TextState)
+        if(textArgs.PropertyName == "TextState")
         {
-            case ConnectionState.Connecting:
-                Debug.Log($"Text Channel Connecting");
-                break;
-            case ConnectionState.Connected:
-                Debug.Log($"Text Channel Connected");
-                break;
-            case ConnectionState.Disconnecting:
-                Debug.Log($"Text Channel Disconnecting");
-                break;
-            case ConnectionState.Disconnected:
-                Debug.Log($"Text Channel Disconnected");
-                break;
+            switch (source.TextState)
+            {
+                case ConnectionState.Connecting:
+                    Debug.Log($"Text Channel Connecting");
+                    break;
+                case ConnectionState.Connected:
+                    Debug.Log($"Text Channel Connected");
+                    break;
+                case ConnectionState.Disconnecting:
+                    Debug.Log($"Text Channel Disconnecting");
+                    break;
+                case ConnectionState.Disconnected:
+                    Debug.Log($"Text Channel Disconnected");
+                    vivox.channelSession.PropertyChanged -= On_Text_State_Changed;
+                    break;
+            }
         }
-
     }
 
     #endregion
@@ -267,5 +307,34 @@ public class VivoxManager : MonoBehaviour
     #endregion
 
 
+    #region Message Methods
+
+    public void Send_Group_Message(string message)
+    {
+        vivox.channelSession.BeginSendText(message, ar =>
+        {
+            try
+            {
+                vivox.channelSession.EndSendText(ar);
+            }
+            catch(Exception e)
+            {
+                Debug.Log(e.Message);
+            }
+        });
+    }
+
+    public void On_Message_Recieved(object sender, QueueItemAddedEventArgs<IChannelTextMessage> msgArgs)
+    {
+        var messenger = (VivoxUnity.IReadOnlyQueue<IChannelTextMessage>)sender;
+
+        Debug.Log($"From {msgArgs.Value.Sender} : Message - {msgArgs.Value.Message}");
+
+        var temp = Instantiate(lobbyUI.txt_Message_Prefab, lobbyUI.container.transform);
+        temp.text = $"From {msgArgs.Value.Sender.DisplayName} : Message - {msgArgs.Value.Message}";
+    }
+
+
+    #endregion
 
 }

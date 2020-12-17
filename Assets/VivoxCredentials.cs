@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VivoxUnity;
 
-public class Base_Credentials
+public class VivoxCredentials
 {
     public VivoxUnity.Client client;
     public Uri server = new Uri("https://mt1s.www.vivox.com/api2");
